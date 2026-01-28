@@ -1,354 +1,450 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bifrost Japan | Institutional BTCFi</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM CDN -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
-        
-        .serif-jp { font-family: 'Shippori Mincho', serif; }
-        .sans-jp { font-family: 'Noto Sans JP', 'Inter', sans-serif; }
-        
-        .hero-gradient {
-            background: radial-gradient(circle at 50% -20%, #E1F0FF 0%, #FBFBFD 70%);
-        }
+{\rtf1\ansi\ansicpg949\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-        .btn-transition {
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1.25rem;
-        }
-    </style>
-</head>
-<body class="bg-[#FBFBFD] text-[#1D1D1F] antialiased">
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-
-        // --- Internal SVG Components for Reliability ---
-        const ArrowRight = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
-        );
-
-        const Building2 = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
-        );
-
-        const BarChart3 = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-        );
-
-        const Lock = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        );
-
-        const Menu = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-        );
-
-        const X = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-        );
-
-        const ArrowUpRight = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
-        );
-
-        const App = () => {
-            const [isMenuOpen, setIsMenuOpen] = useState(false);
-            const [scrolled, setScrolled] = useState(false);
-
-            useEffect(() => {
-                const handleScroll = () => setScrolled(window.scrollY > 20);
-                window.addEventListener('scroll', handleScroll);
-                return () => window.removeEventListener('scroll', handleScroll);
-            }, []);
-
-            const partners = [
-                { name: 'SBI Digital Finance', sector: 'Financial Partner' },
-                { name: 'Animoca Brands Japan', sector: 'Ecosystem Partner' },
-                { name: 'BCCC Member', sector: 'Institutional Body' },
-            ];
-
-            return (
-                <div className="min-h-screen selection:bg-[#002B5B] selection:text-white">
-                    {/* Navigation */}
-                    <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'py-4 bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm' : 'py-6 bg-transparent'}`}>
-                        <div className="max-w-7xl mx-auto px-8 flex items-center justify-between">
-                            <div className="flex items-center gap-4 group cursor-pointer">
-                                <div className="w-10 h-10 bg-[#002B5B] rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform">
-                                    <span className="text-white font-bold text-xl tracking-tighter">B</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-lg font-bold tracking-tight text-[#002B5B]">Bifrost Japan</span>
-                                    <span className="text-[9px] uppercase tracking-[0.3em] text-gray-400 font-bold">Institutional Grade</span>
-                                </div>
-                            </div>
-                            
-                            <div className="hidden lg:flex items-center gap-12">
-                                {['ソリューション', 'テクノロジー', 'コンプライアンス'].map((item) => (
-                                    <a key={item} href="#" className="text-[13px] font-medium text-gray-500 hover:text-[#002B5B] transition-colors tracking-widest">{item}</a>
-                                ))}
-                                <button className="bg-[#1D1D1F] text-white px-7 py-2.5 rounded-full text-[13px] font-semibold hover:bg-[#002B5B] btn-transition shadow-lg shadow-black/5">
-                                    お問い合わせ
-                                </button>
-                            </div>
-
-                            <button className="lg:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                            </button>
-                        </div>
-                    </nav>
-
-                    {/* Hero Section */}
-                    <section className="hero-gradient pt-48 pb-32 px-8 overflow-hidden">
-                        <div className="max-w-7xl mx-auto text-center">
-                            <div className="inline-flex items-center gap-3 bg-white/50 backdrop-blur-sm border border-[#002B5B]/10 px-5 py-2 rounded-full text-[11px] font-bold tracking-[0.2em] text-[#002B5B] mb-12 shadow-sm uppercase">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#002B5B] opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#002B5B]"></span>
-                                </span>
-                                Strategy for 2026 Shift
-                            </div>
-                            
-                            <h1 className="serif-jp text-5xl md:text-7xl lg:text-[84px] font-bold mb-12 leading-[1.2] tracking-tight text-[#1D1D1F]">
-                                日本企業のための<br />
-                                <span className="bg-gradient-to-r from-[#002B5B] to-[#0071E3] bg-clip-text text-transparent">次世代ビットコイン金融</span>
-                            </h1>
-                            
-                            <p className="sans-jp text-lg md:text-2xl text-gray-500 mb-16 max-w-4xl mx-auto font-light leading-relaxed tracking-wide">
-                                制度圏への適応、そして資本効率の極大化。<br className="hidden md:block" />
-                                2026年の法改正を見据えた、最も洗練されたB2B BTCFiインフラストラクチャ。
-                            </p>
-                            
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                                <button className="w-full sm:w-[240px] bg-[#002B5B] text-white py-5 rounded-2xl text-[16px] font-bold hover:shadow-2xl hover:-translate-y-1 btn-transition flex items-center justify-center gap-3">
-                                    相談を予約する <ArrowRight size={18} />
-                                </button>
-                                <button className="w-full sm:w-[240px] bg-white border border-gray-200 text-[#1D1D1F] py-5 rounded-2xl text-[16px] font-bold hover:bg-gray-50 btn-transition shadow-sm">
-                                    ホワイトペーパー
-                                </button>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Partners Section */}
-                    <section className="py-20 bg-white border-y border-gray-100">
-                        <div className="max-w-7xl mx-auto px-8">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
-                                {partners.map((p) => (
-                                    <div key={p.name} className="flex flex-col items-center md:items-start group">
-                                        <span className="text-[10px] font-bold text-gray-300 uppercase tracking-[0.3em] mb-3">{p.sector}</span>
-                                        <div className="flex items-center gap-4 grayscale group-hover:grayscale-0 transition-all duration-500">
-                                            <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 font-bold text-gray-400 text-xl uppercase">
-                                                {p.name[0]}
-                                            </div>
-                                            <span className="font-bold text-xl text-[#424245] tracking-tighter">{p.name}</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Solutions Section */}
-                    <section className="py-48 px-8">
-                        <div className="max-w-7xl mx-auto">
-                            <div className="grid lg:grid-cols-2 gap-32 items-start">
-                                <div className="sans-jp pt-4">
-                                    <h2 className="serif-jp text-4xl md:text-[52px] font-bold mb-10 text-[#1D1D1F] leading-[1.3] tracking-tight">
-                                        伝統と革新を繋ぐ、<br />
-                                        唯一のゲートウェイ。
-                                    </h2>
-                                    <p className="text-[18px] text-gray-500 mb-14 leading-[1.8] font-light tracking-wide max-w-xl">
-                                        日本国内の規制環境（FSA）を深く理解し遵守することで、企業の資産運用における新たな地平を切り拓きます。単なる技術提供に留まらず、ビジネスの成長を支援するパートナーとして併走いたします。
-                                    </p>
-                                    
-                                    <div className="grid gap-8">
-                                        <div className="group p-10 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl btn-transition cursor-default">
-                                            <div className="w-14 h-14 bg-[#F5F5F7] rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[#002B5B] transition-colors">
-                                                <Building2 className="text-[#002B5B] group-hover:text-white transition-colors" size={28} />
-                                            </div>
-                                            <h4 className="font-bold text-2xl mb-4 tracking-tight text-[#1D1D1F]">Corporate Treasury</h4>
-                                            <p className="text-gray-500 leading-relaxed font-light">
-                                                企業が保有するBTCの安全なカストディ協力と、利回り運用の最適化をパッケージで提供します。
-                                            </p>
-                                        </div>
-                                        
-                                        <div className="group p-10 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl btn-transition cursor-default">
-                                            <div className="w-14 h-14 bg-[#F5F5F7] rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[#F2A900] transition-colors">
-                                                <BarChart3 className="text-[#F2A900] group-hover:text-white transition-colors" size={28} />
-                                            </div>
-                                            <h4 className="font-bold text-2xl mb-4 tracking-tight text-[#1D1D1F]">Infrastructure (B2B2B)</h4>
-                                            <p className="text-gray-500 leading-relaxed font-light">
-                                                既存の金融サービスにBTCFi를 시ーム리스에 統合。SDKとAPIを通じて即時の事業展開が可能です。
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="lg:sticky lg:top-32">
-                                    <div className="bg-[#002B5B] rounded-[3rem] p-12 md:p-16 text-white overflow-hidden relative shadow-3xl">
-                                        <div className="absolute top-0 right-0 w-96 h-96 bg-[#0071E3] blur-[150px] opacity-20 -mr-32 -mt-32"></div>
-                                        <div className="relative z-10">
-                                            <div className="flex items-center justify-between mb-12">
-                                                <h3 className="serif-jp text-3xl font-bold tracking-tight">Partner Portal</h3>
-                                                <div className="px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold uppercase tracking-widest">Premium Only</div>
-                                            </div>
-                                            
-                                            <div className="space-y-6">
-                                                {[
-                                                    { title: "2026年 税制改正対応シミュレーター", date: "Update: 2024.Q4" },
-                                                    { title: "FIEA（金商法）準拠性ガイドライン", date: "Exclusive" },
-                                                    { title: "機関投資家向けカストディ・ホワイトペーパー", date: "Restricted" }
-                                                ].map((item, idx) => (
-                                                    <div key={idx} className="p-7 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between group cursor-pointer hover:bg-white/15 transition-all">
-                                                        <div className="flex flex-col gap-1">
-                                                            <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase">{item.date}</span>
-                                                            <h5 className="font-medium text-[17px] text-white/90">{item.title}</h5>
-                                                        </div>
-                                                        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
-                                                            <Lock size={16} className="text-white/40" />
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            
-                                            <div className="mt-16 text-center">
-                                                <button className="w-full py-5 rounded-2xl bg-white text-[#002B5B] font-bold text-[16px] hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
-                                                    アクセス権限をリクエスト <ArrowUpRight size={18} />
-                                                </button>
-                                                <p className="mt-6 text-[12px] text-white/40 font-light italic">
-                                                    ※ 審査の上、個別のアカウントを発行いたします。
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Contact Section */}
-                    <section className="py-40 bg-[#1D1D1F] text-white relative">
-                        <div className="max-w-7xl mx-auto px-8 grid lg:grid-cols-12 gap-20">
-                            <div className="lg:col-span-5 pt-8">
-                                <h2 className="serif-jp text-4xl md:text-5xl lg:text-6xl font-bold mb-10 leading-tight">
-                                    未来の資産運用を<br />共に創る。
-                                </h2>
-                                <p className="sans-jp text-gray-400 text-lg md:text-xl font-light leading-relaxed mb-12 max-w-md">
-                                    貴社のビジネスに合わせたカスタム戦略を、専門家が提案いたします。お気軽にお問い合わせください。
-                                </p>
-                                <div className="space-y-6 text-sm text-gray-500 font-medium">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-6 h-px bg-gray-700"></div>
-                                        <span>国内の法務・税務ガイドラインを支援</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-6 h-px bg-gray-700"></div>
-                                        <span>専任のアカウントマネージャーによるサポート</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="lg:col-span-7">
-                                <div className="bg-white p-10 md:p-14 rounded-[3rem] shadow-3xl text-[#1D1D1F]">
-                                    <form className="grid grid-cols-1 md:grid-cols-2 gap-10" onSubmit={(e) => e.preventDefault()}>
-                                        <div className="space-y-3">
-                                            <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">貴社名 / Organization</label>
-                                            <input type="text" className="w-full border-b border-gray-200 py-3 focus:border-[#002B5B] focus:outline-none transition-colors placeholder:text-gray-300" placeholder="株式会社 〇〇" />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">お名前 / Full Name</label>
-                                            <input type="text" className="w-full border-b border-gray-200 py-3 focus:border-[#002B5B] focus:outline-none transition-colors placeholder:text-gray-300" placeholder="姓名" />
-                                        </div>
-                                        <div className="space-y-3 md:col-span-2">
-                                            <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">ビジネス分野 / Industry</label>
-                                            <select className="w-full border-b border-gray-200 py-3 focus:border-[#002B5B] focus:outline-none transition-colors bg-transparent appearance-none">
-                                                <option>金融機関 (銀行・証券)</option>
-                                                <option>事業会社 (事業投資・財務)</option>
-                                                <option>Web3 スタートアップ</option>
-                                                <option>その他</option>
-                                            </select>
-                                        </div>
-                                        <div className="space-y-3 md:col-span-2">
-                                            <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">メッセージ / Message</label>
-                                            <textarea rows="4" className="w-full border-b border-gray-200 py-3 focus:border-[#002B5B] focus:outline-none transition-colors placeholder:text-gray-300 resize-none" placeholder="ご相談内容をご記入ください。"></textarea>
-                                        </div>
-                                        <button className="md:col-span-2 bg-[#002B5B] text-white py-6 rounded-2xl font-bold text-xl hover:bg-black transition-all shadow-xl shadow-blue-900/10 mt-4">
-                                            専門相談を予約する
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Footer */}
-                    <footer className="py-24 bg-[#FBFBFD] border-t border-gray-100">
-                        <div className="max-w-7xl mx-auto px-8">
-                            <div className="flex flex-col md:flex-row justify-between items-start gap-16">
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-[#002B5B] rounded flex items-center justify-center">
-                                            <span className="text-white font-bold text-sm tracking-tighter">B</span>
-                                        </div>
-                                        <span className="text-lg font-bold text-[#1D1D1F] tracking-tight">Bifrost Japan</span>
-                                    </div>
-                                    <p className="max-w-xs text-[13px] text-gray-400 leading-relaxed font-light">
-                                        ビットコイン金融のグローバルリーダー。2026年の日本市場におけるWeb3大転換を支えるインフラストラクチャを提供します。
-                                    </p>
-                                </div>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-16">
-                                    <div className="space-y-6">
-                                        <h5 className="text-[11px] font-bold uppercase tracking-widest text-gray-900">Resource</h5>
-                                        <ul className="space-y-4 text-[13px] text-gray-400">
-                                            <li><a href="#" className="hover:text-[#002B5B] transition-colors">Documentation</a></li>
-                                            <li><a href="#" className="hover:text-[#002B5B] transition-colors">Whitepaper</a></li>
-                                            <li><a href="#" className="hover:text-[#002B5B] transition-colors">Security Audit</a></li>
-                                        </ul>
-                                    </div>
-                                    <div className="space-y-6">
-                                        <h5 className="text-[11px] font-bold uppercase tracking-widest text-gray-900">Legal</h5>
-                                        <ul className="space-y-4 text-[13px] text-gray-400">
-                                            <li><a href="#" className="hover:text-[#002B5B] transition-colors">Privacy Policy</a></li>
-                                            <li><a href="#" className="hover:text-[#002B5B] transition-colors">Terms of Use</a></li>
-                                            <li><a href="#" className="hover:text-[#002B5B] transition-colors">BCCC Info</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="mt-24 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6 text-[11px] text-gray-300 uppercase tracking-[0.2em] font-medium">
-                                <p>© 2026 Bifrost Network. Institutional Excellence.</p>
-                            </div>
-                        </div>
-                    </footer>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="ja">\
+<head>\
+    <meta charset="UTF-8">\
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
+    <title>Bifrost Japan | Institutional BTCFi Infrastructure</title>\
+    <!-- Tailwind CSS CDN -->\
+    <script src="https://cdn.tailwindcss.com"></script>\
+    <!-- React & ReactDOM CDN -->\
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>\
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>\
+    <!-- Babel for JSX -->\
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>\
+    <style>\
+        @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700;800&family=Noto+Serif+JP:wght@200;300;400;500;700&family=Inter:wght@300;400;600&display=swap');\
+        \
+        .serif-jp \{ font-family: 'Shippori Mincho', serif; \}\
+        .body-serif \{ font-family: 'Noto Serif JP', serif; \}\
+        .sans-inter \{ font-family: 'Inter', sans-serif; \}\
+        \
+        html \{ scroll-behavior: smooth; \}\
+        body \{\
+            background-color: #FBFBFD;\
+            color: #1D1D1F;\
+            -webkit-font-smoothing: antialiased;\
+        \}\
+\
+        .hero-gradient \{\
+            background: radial-gradient(circle at 50% -20%, #E1F0FF 0%, #FBFBFD 70%);\
+        \}\
+\
+        .btn-luxury \{\
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);\
+        \}\
+\
+        .glass-nav \{\
+            background: rgba(251, 251, 253, 0.8);\
+            backdrop-filter: blur(20px);\
+            -webkit-backdrop-filter: blur(20px);\
+        \}\
+\
+        .premium-card \{\
+            background: #FFFFFF;\
+            border: 1px solid #F0F0F2;\
+            transition: transform 0.4s ease, box-shadow 0.4s ease;\
+        \}\
+        .premium-card:hover \{\
+            transform: translateY(-5px);\
+            box-shadow: 0 20px 40px rgba(0, 43, 91, 0.04);\
+        \}\
+\
+        ::selection \{\
+            background: #002B5B;\
+            color: #FFFFFF;\
+        \}\
+\
+        #solutions, #technology, #compliance, #contact \{\
+            scroll-margin-top: 80px;\
+        \}\
+\
+        /* Mobile Menu Fade Animation */\
+        .fade-in \{\
+            animation: fadeIn 0.3s ease forwards;\
+        \}\
+        @keyframes fadeIn \{\
+            from \{ opacity: 0; transform: translateY(-10px); \}\
+            to \{ opacity: 1; transform: translateY(0); \}\
+        \}\
+    </style>\
+</head>\
+<body class="body-serif text-left">\
+    <div id="root"></div>\
+\
+    <script type="text/babel">\
+        const \{ useState, useEffect, useCallback \} = React;\
+\
+        // --- SVGs (Self-contained to avoid external library errors) ---\
+        const ArrowRight = (\{ size = 20, className = "" \}) => (\
+            <svg width=\{size\} height=\{size\} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className=\{className\}><path d="M5 12h14m-7-7 7 7-7 7"/></svg>\
+        );\
+        const Building2 = (\{ size = 24, className = "" \}) => (\
+            <svg width=\{size\} height=\{size\} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className=\{className\}><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>\
+        );\
+        const ShieldCheck = (\{ size = 24, className = "" \}) => (\
+            <svg width=\{size\} height=\{size\} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className=\{className\}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>\
+        );\
+        const Lock = (\{ size = 20, className = "" \}) => (\
+            <svg width=\{size\} height=\{size\} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className=\{className\}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>\
+        );\
+        const Globe = (\{ size = 16, className = "" \}) => (\
+            <svg width=\{size\} height=\{size\} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className=\{className\}><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>\
+        );\
+        const TwitterX = (\{ size = 18, className = "" \}) => (\
+            <svg width=\{size\} height=\{size\} viewBox="0 0 24 24" fill="currentColor" className=\{className\}><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>\
+        );\
+        const MenuIcon = () => (\
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>\
+        );\
+        const CloseIcon = () => (\
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>\
+        );\
+\
+        const App = () => \{\
+            const [scrolled, setScrolled] = useState(false);\
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);\
+            const [formData, setFormData] = useState(\{\
+                organization: '', name: '', email: '', industry: '\uc0\u37329 \u34701 \u27231 \u38306  (\u37504 \u34892 \u12539 \u35388 \u21048 \u12539 \u20449 \u35351 )', message: ''\
+            \});\
+\
+            useEffect(() => \{\
+                const handleScroll = () => \{\
+                    if (typeof window !== 'undefined') setScrolled(window.scrollY > 20);\
+                \};\
+                window.addEventListener('scroll', handleScroll, \{ passive: true \});\
+                return () => window.removeEventListener('scroll', handleScroll);\
+            \}, []);\
+\
+            const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);\
+            const closeMobileMenu = () => setIsMobileMenuOpen(false);\
+\
+            const handleChange = (e) => \{\
+                const \{ name, value \} = e.target;\
+                setFormData(prev => (\{ ...prev, [name]: value \}));\
+            \};\
+\
+            const handleSubmit = (e) => \{\
+                e.preventDefault();\
+                const recipients = "yoonjung@pi-lab.io,chanul@pi-lab.io";\
+                const subject = encodeURIComponent(`[Bifrost Japan \uc0\u12362 \u21839 \u12356 \u21512 \u12431 \u12379 ] $\{formData.organization\} - $\{formData.name\}`);\
+                const body = encodeURIComponent(\
+                    `\uc0\u12362 \u21839 \u12356 \u21512 \u12431 \u12379 \u20869 \u23481 :\\n\\n` +\
+                    `\uc0\u36020 \u31038 \u21517 : $\{formData.organization\}\\n` +\
+                    `\uc0\u12362 \u21517 \u21069 : $\{formData.name\}\\n` +\
+                    `\uc0\u12513 \u12540 \u12523 \u12450 \u12489 \u12524 \u12473 : $\{formData.email\}\\n` +\
+                    `\uc0\u26989 \u30028 \u20998 \u37326 : $\{formData.industry\}\\n` +\
+                    `\uc0\u12513 \u12483 \u12475 \u12540 \u12472 : $\{formData.message\}`\
+                );\
+                if (typeof window !== 'undefined') \{\
+                    window.location.href = `mailto:$\{recipients\}?subject=$\{subject\}&body=$\{body\}`;\
+                \}\
+            \};\
+\
+            const strategicPartners = [\
+                "KDDI", "SBI Digital Finance", "OKJ", "BitTrade", \
+                "Animoca Brands Japan", "AI Fusion", "AWS", "JOC", \
+                "Slash", "MCH", "Pacific Meta"\
+            ];\
+            const associations = ["JCBA", "FAJ", "BCCC"];\
+\
+            return (\
+                <div className="min-h-screen flex flex-col overflow-x-hidden">\
+                    \{/* Navigation */\}\
+                    <nav className=\{`fixed w-full z-[100] transition-all duration-700 $\{scrolled || isMobileMenuOpen ? 'py-4 glass-nav border-b border-gray-100 shadow-sm' : 'py-6 md:py-8 bg-transparent'\}`\}>\
+                        <div className="max-w-7xl mx-auto px-6 md:px-8 flex items-center justify-between">\
+                            <div className="flex items-center gap-4 group cursor-pointer z-[110]" onClick=\{() => \{ window.scrollTo(\{top: 0, behavior: 'smooth'\}); closeMobileMenu(); \}\}>\
+                                <div className="w-8 h-8 md:w-10 md:h-10 bg-[#002B5B] rounded flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">\
+                                    <span className="text-white font-bold text-lg md:text-xl tracking-tighter sans-inter">B</span>\
+                                </div>\
+                                <div className="flex flex-col">\
+                                    <span className="serif-jp text-base md:text-lg font-bold tracking-tight text-[#002B5B]">Bifrost Japan</span>\
+                                    <span className="sans-inter text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-gray-400 font-bold">Institutional</span>\
+                                </div>\
+                            </div>\
+                            \
+                            <div className="hidden lg:flex items-center gap-10 text-[13px] font-medium tracking-[0.1em] text-gray-500 serif-jp uppercase">\
+                                <a href="#solutions" className="hover:text-[#002B5B] transition-colors">\uc0\u12477 \u12522 \u12517 \u12540 \u12471 \u12519 \u12531 </a>\
+                                <a href="#technology" className="hover:text-[#002B5B] transition-colors">\uc0\u12486 \u12463 \u12494 \u12525 \u12472 \u12540 </a>\
+                                <a href="#compliance" className="hover:text-[#002B5B] transition-colors">\uc0\u12467 \u12531 \u12503 \u12521 \u12452 \u12450 \u12531 \u12473 </a>\
+                                <a href="#contact" className="bg-[#002B5B] text-white px-8 py-3 rounded-full text-[12px] font-bold btn-luxury hover:bg-black shadow-xl shadow-blue-900/10">\
+                                    \uc0\u12362 \u21839 \u12356 \u21512 \u12431 \u12379 \
+                                </a>\
+                            </div>\
+\
+                            <button className="lg:hidden p-2 text-[#002B5B] z-[110]" onClick=\{toggleMobileMenu\}>\
+                                \{isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />\}\
+                            </button>\
+                        </div>\
+\
+                        \{isMobileMenuOpen && (\
+                            <div className="lg:hidden fixed inset-0 bg-white z-[105] flex flex-col items-center justify-center gap-10 serif-jp text-3xl font-bold fade-in">\
+                                <a href="#solutions" onClick=\{closeMobileMenu\} className="text-[#1D1D1F]">\uc0\u12477 \u12522 \u12517 \u12540 \u12471 \u12519 \u12531 </a>\
+                                <a href="#technology" onClick=\{closeMobileMenu\} className="text-[#1D1D1F]">\uc0\u12486 \u12463 \u12494 \u12525 \u12472 \u12540 </a>\
+                                <a href="#compliance" onClick=\{closeMobileMenu\} className="text-[#1D1D1F]">\uc0\u12467 \u12531 \u12503 \u12521 \u12452 \u12450 \u12531 \u12473 </a>\
+                                <a href="#contact" onClick=\{closeMobileMenu\} className="text-[#002B5B] border-2 border-[#002B5B] px-10 py-4 rounded-full">\uc0\u12362 \u21839 \u12356 \u21512 \u12431 \u12379 </a>\
+                            </div>\
+                        )\}\
+                    </nav>\
+\
+                    \{/* Hero Section */\}\
+                    <section className="hero-gradient pt-48 md:pt-60 pb-24 md:pb-40 px-6 md:px-8 relative overflow-hidden">\
+                        <div className="max-w-6xl mx-auto text-center relative z-10">\
+                            <div className="inline-flex items-center gap-3 bg-white/60 backdrop-blur-md border border-[#002B5B]/10 px-4 md:px-5 py-2 rounded-full text-[9px] md:text-[10px] font-bold tracking-[0.25em] text-[#002B5B] mb-8 md:mb-12 shadow-sm uppercase sans-inter">\
+                                <Globe size=\{14\} className="animate-pulse" />\
+                                Strategy for 2026 Shift\
+                            </div>\
+                            \
+                            <h1 className="serif-jp text-4xl sm:text-5xl md:text-8xl font-extrabold mb-8 md:mb-12 leading-[1.2] md:leading-[1.15] tracking-tight text-[#1D1D1F]">\
+                                \uc0\u26085 \u26412 \u20225 \u26989 \u12398 \u12383 \u12417 \u12398 <br />\
+                                <span className="bg-gradient-to-r from-[#002B5B] via-[#00458B] to-[#0071E3] bg-clip-text text-transparent">\uc0\u27425 \u19990 \u20195 \u12499 \u12483 \u12488 \u12467 \u12452 \u12531 \u37329 \u34701 </span>\
+                            </h1>\
+                            \
+                            <p className="body-serif text-lg md:text-2xl text-gray-500 mb-12 md:mb-16 max-w-4xl mx-auto font-light leading-relaxed tracking-wide text-center">\
+                                \uc0\u21046 \u24230 \u21270 \u12408 \u12398 \u36969 \u24540 \u12289 \u12381 \u12375 \u12390 \u36039 \u26412 \u21177 \u29575 \u12398 \u26368 \u22823 \u21270 \u12290 <br className="hidden md:block" />\
+                                2026\uc0\u24180 \u12398 \u27861 \u25913 \u27491 \u12434 \u35211 \u25454 \u12360 \u12383 \u12289 \u26368 \u12418 \u27927 \u32244 \u12373 \u12428 \u12383 B2B BTCFi\u12452 \u12531 \u12501 \u12521 \u12473 \u12488 \u12521 \u12463 \u12481 \u12515 \u12290 \
+                            </p>\
+                            \
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6">\
+                                <a href="#contact" className="w-full sm:w-[260px] bg-[#002B5B] text-white py-5 md:py-6 rounded-full text-[15px] md:text-[16px] font-bold hover:shadow-2xl hover:-translate-y-1 btn-luxury flex items-center justify-center gap-3">\
+                                    \uc0\u23554 \u38272 \u30456 \u35527 \u12434 \u20104 \u32004 \u12377 \u12427  <ArrowRight />\
+                                </a>\
+                                <a href="#contact" className="w-full sm:w-[260px] bg-white border border-gray-200 text-[#1D1D1F] py-5 md:py-6 rounded-full text-[15px] md:text-[16px] font-bold hover:bg-gray-50 btn-luxury shadow-sm flex items-center justify-center">\
+                                    \uc0\u12507 \u12527 \u12452 \u12488 \u12506 \u12540 \u12497 \u12540 \u12434 \u38322 \u35239 \
+                                </a>\
+                            </div>\
+                        </div>\
+                    </section>\
+\
+                    \{/* Trust Section */\}\
+                    <section className="py-12 md:py-16 bg-white border-y border-gray-50/50 text-center">\
+                        <div className="max-w-7xl mx-auto px-6 md:px-8">\
+                            <p className="sans-inter text-[9px] font-bold uppercase tracking-[0.4em] text-gray-200 mb-8">Selected Strategic Partners</p>\
+                            <div className="flex flex-wrap justify-center items-center gap-x-8 md:gap-x-12 gap-y-6 md:gap-y-8 mb-10">\
+                                \{strategicPartners.map((name) => (\
+                                    <div key=\{name\} className="serif-jp text-xs md:text-sm font-medium tracking-[0.1em] text-[#1D1D1F] opacity-[0.15] hover:opacity-100 transition-opacity duration-700 cursor-default">\
+                                        \{name\}\
+                                    </div>\
+                                ))\}\
+                            </div>\
+                            <div className="pt-8 border-t border-gray-50/50">\
+                                <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-4 text-center">\
+                                    \{associations.map((name) => (\
+                                        <div key=\{name\} className="serif-jp text-xs md:text-sm font-bold text-[#002B5B] opacity-[0.12] hover:opacity-80 transition-opacity duration-700 cursor-default uppercase tracking-widest">\
+                                            \{name\}\
+                                        </div>\
+                                    ))\}\
+                                </div>\
+                            </div>\
+                        </div>\
+                    </section>\
+\
+                    \{/* Solutions Section */\}\
+                    <section id="solutions" className="py-24 md:py-48 px-6 md:px-8 max-w-7xl mx-auto text-left">\
+                        <div className="grid lg:grid-cols-2 gap-16 md:gap-32 items-start">\
+                            <div className="serif-jp">\
+                                <h2 className="text-4xl md:text-6xl font-bold mb-8 md:mb-12 text-[#1D1D1F] leading-[1.2] tracking-tight">\
+                                    \uc0\u20253 \u32113 \u12392 \u38761 \u26032 \u12434 \u32331 \u12368 \u12289 <br />\u21807 \u19968 \u12398 \u12466 \u12540 \u12488 \u12454 \u12455 \u12452 \u12290 \
+                                </h2>\
+                                <p className="body-serif text-lg md:text-xl text-gray-500 mb-12 md:mb-16 leading-relaxed font-light tracking-wide">\
+                                    \uc0\u26085 \u26412 \u22269 \u20869 \u12398 \u35215 \u21046 \u29872 \u22659 \u65288 FSA\u65289 \u12434 \u28145 \u12367 \u29702 \u35299 \u12375 \u36981 \u23432 \u12377 \u12427 \u12371 \u12392 \u12391 \u12289 \u20225 \u26989 \u12398 \u36039 \u29987 \u36939 \u29992 \u12395 \u12362 \u12369 \u12427 \u26032 \u12383 \u12394 \u22320 \u24179 \u12434 \u20999 \u12426 \u25299 \u12365 \u12414 \u12377 \u12290 \u21336 \u12394 \u12427 \u25216 \u34899 \u25552 \u20379 \u12395 \u30041 \u12414 \u12425 \u12378 \u12289 \u12499 \u12472 \u12493 \u12473 \u12398 \u25104 \u38263 \u12434 \u25903 \u25588 \u12377 \u12427 \u12497 \u12540 \u12488 \u12490 \u12540 \u12392 \u12375 \u12390 \u20276 \u36208 \u12356 \u12383 \u12375 \u12414 \u12377 \u12290 \
+                                </p>\
+                                \
+                                <div className="space-y-8 md:space-y-10" id="technology">\
+                                    <div className="premium-card p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem]">\
+                                        <div className="w-14 h-14 md:w-16 md:h-16 bg-[#F5F5F7] rounded-2xl flex items-center justify-center mb-6 md:mb-8">\
+                                            <Building2 className="text-[#002B5B]" size=\{28\} />\
+                                        </div>\
+                                        <h4 className="text-2xl md:text-3xl font-bold mb-4 tracking-tight text-[#1D1D1F]">Corporate Treasury</h4>\
+                                        <p className="body-serif text-gray-500 leading-loose font-light text-sm md:text-base">\
+                                            \uc0\u20225 \u26989 \u12364 \u20445 \u26377 \u12377 \u12427 \u12499 \u12483 \u12488 \u12467 \u12452 \u12531 \u12434 \u23433 \u20840 \u12395 \u12459 \u12473 \u12488 \u12487 \u12451 \u12375 \u12289 \u31246 \u21209 \u21177 \u29575 \u12434 \u32771 \u24942 \u12375 \u12383 \u12493 \u12452 \u12486 \u12451 \u12502 \u21033 \u22238 \u12426 \u36939 \u29992 \u12434 \u25552 \u20379 \u12375 \u12414 \u12377 \u12290 \
+                                        </p>\
+                                    </div>\
+                                    <div className="premium-card p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border-l-4 border-l-[#F2A900]">\
+                                        <div className="w-14 h-14 md:w-16 md:h-16 bg-[#F2A900]/5 rounded-2xl flex items-center justify-center mb-6 md:mb-8">\
+                                            <ShieldCheck className="text-[#F2A900]" size=\{28\} />\
+                                        </div>\
+                                        <h4 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight text-[#1D1D1F]">BTCFi Customization</h4>\
+                                        <p className="body-serif text-gray-500 leading-loose font-light mb-6 text-sm md:text-base">\
+                                            \uc0\u26082 \u23384 \u12398 \u37329 \u34701 \u12469 \u12540 \u12499 \u12473 \u12395 BTCFi\u12434 \u12471 \u12540 \u12512 \u12524 \u12473 \u12395 \u32113 \u21512 \u12290 \u20225 \u26989 \u12491 \u12540 \u12474 \u12395 \u21512 \u12431 \u12379 \u12289 B2B2C\u12539 B2B2B\u38283 \u30330 \u12434 \u26580 \u36575 \u12395 \u12469 \u12509 \u12540 \u12488 \u12375 \u12414 \u12377 \u12290 \
+                                        </p>\
+                                        <div className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-[#F2A900] sans-inter tracking-widest uppercase italic">\
+                                            Custom development requires consultation\
+                                        </div>\
+                                    </div>\
+                                </div>\
+                            </div>\
+                            \
+                            <div className="lg:sticky lg:top-32 w-full text-left" id="compliance">\
+                                <div className="bg-[#002B5B] rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-16 text-white overflow-hidden relative shadow-3xl">\
+                                    <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-[#0071E3] blur-[100px] md:blur-[150px] opacity-20 -mr-24 -mt-24 md:-mr-32 md:-mt-32"></div>\
+                                    <div className="relative z-10">\
+                                        <div className="flex items-center justify-between mb-8 md:mb-12 border-b border-white/10 pb-6 md:pb-8 text-white/90">\
+                                            <h3 className="serif-jp text-2xl md:text-3xl font-bold tracking-tight">Partner Exclusive</h3>\
+                                            <div className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[8px] md:text-[10px] font-bold uppercase tracking-widest sans-inter">Premium Access</div>\
+                                        </div>\
+                                        \
+                                        <div className="space-y-4 md:space-y-6 serif-jp">\
+                                            \{[\
+                                                \{ title: "2026\uc0\u24180 \u24230  \u31246 \u21046 \u25913 \u27491 \u23550 \u24540 \u12471 \u12511 \u12517 \u12524 \u12540 \u12479 \u12540 ", tag: "Financial" \},\
+                                                \{ title: "FIEA\uc0\u65288 \u37329 \u21830 \u27861 \u65289 \u28310 \u25312 \u24615 \u12460 \u12452 \u12489 \u12521 \u12452 \u12531 ", tag: "Legal" \},\
+                                                \{ title: "\uc0\u27231 \u38306 \u25237 \u36039 \u23478 \u21521 \u12369 \u12459 \u12473 \u12488 \u12487 \u12451 \u36939 \u29992 \u12514 \u12487 \u12523 ", tag: "Technical" \}\
+                                            ].map((item, idx) => (\
+                                                <div key=\{idx\} className="p-6 md:p-8 bg-white/5 rounded-2xl md:rounded-3xl border border-white/10 flex items-center justify-between group cursor-pointer hover:bg-white/15 transition-all text-white/90">\
+                                                    <div className="flex flex-col gap-1">\
+                                                        <span className="sans-inter text-[8px] md:text-[9px] text-blue-300 font-bold tracking-[0.2em] uppercase">\{item.tag\}</span>\
+                                                        <h5 className="font-medium text-base md:text-lg">\{item.title\}</h5>\
+                                                    </div>\
+                                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all text-white/40">\
+                                                        <Lock size=\{16\} />\
+                                                    </div>\
+                                                </div>\
+                                            ))\}\
+                                        </div>\
+                                        \
+                                        <div className="mt-12 md:mt-16 text-center">\
+                                            <a href="#contact" className="w-full py-5 md:py-6 rounded-full bg-white text-[#002B5B] font-bold text-[15px] md:text-[16px] hover:bg-gray-100 transition-colors flex items-center justify-center gap-3 serif-jp shadow-xl shadow-black/20">\
+                                                \uc0\u12450 \u12463 \u12475 \u12473 \u27177 \u38480 \u12434 \u12522 \u12463 \u12456 \u12473 \u12488  <ArrowRight />\
+                                            </a>\
+                                            <p className="mt-6 md:mt-8 text-[11px] md:text-[12px] text-white/40 body-serif italic leading-relaxed text-center">\
+                                                \uc0\u8251  \u23529 \u26619 \u12398 \u19978 \u12289 \u20491 \u21029 \u12398 \u12450 \u12459 \u12454 \u12531 \u12488 \u12434 \u30330 \u34892 \u12356 \u12383 \u12375 \u12414 \u12377 \u12290 <br />\u26412 \u36039 \u26009 \u12398 \u35079 \u35069 \u12362 \u12424 \u12403 \u37197 \u24067 \u12399 \u22266 \u12367 \u31105 \u12376 \u12425 \u12428 \u12390 \u12356 \u12414 \u12377 \u12290 \
+                                            </p>\
+                                        </div>\
+                                    </div>\
+                                </div>\
+                            </div>\
+                        </div>\
+                    </section>\
+\
+                    \{/* Contact Section */\}\
+                    <section id="contact" className="py-24 md:py-48 bg-[#1D1D1F] text-white relative text-left">\
+                        <div className="max-w-7xl mx-auto px-6 md:px-8 grid lg:grid-cols-12 gap-16 md:gap-24">\
+                            <div className="lg:col-span-5 flex flex-col justify-center serif-jp">\
+                                <h2 className="text-4xl md:text-7xl font-bold mb-8 md:mb-12 leading-tight tracking-tight text-white/90 text-center lg:text-left">\
+                                    \uc0\u26410 \u26469 \u12398 \u36039 \u29987 \u36939 \u29992 \u12434 <br />\u20849 \u12395 \u21109 \u12427 \u12290 \
+                                </h2>\
+                                <p className="body-serif text-lg md:text-xl text-gray-400 font-light leading-relaxed mb-12 md:mb-16 max-w-md mx-auto lg:mx-0 text-center lg:text-left">\
+                                    \uc0\u36020 \u31038 \u12398 \u12499 \u12472 \u12493 \u12473 \u12514 \u12487 \u12523 \u12395 \u21512 \u12431 \u12379 \u12383 \u12459 \u12473 \u12479 \u12512 \u25126 \u30053 \u12434 \u12289 \u23554 \u38272 \u23478 \u12364 \u12372 \u25552 \u26696 \u12356 \u12383 \u12375 \u12414 \u12377 \u12290 \
+                                </p>\
+                                <div className="space-y-6 md:space-y-8 hidden lg:block text-gray-400">\
+                                    <div className="flex items-center gap-6">\
+                                        <div className="w-10 h-[1px] bg-gray-700"></div>\
+                                        <span>\uc0\u22269 \u20869 \u12398 \u27861 \u21209 \u12539 \u31246 \u21209 \u12460 \u12452 \u12489 \u12521 \u12452 \u12531 \u12434 \u25903 \u25588 </span>\
+                                    </div>\
+                                    <div className="flex items-center gap-6">\
+                                        <div className="w-10 h-[1px] bg-gray-700"></div>\
+                                        <span>\uc0\u23554 \u20219 \u12398 \u12450 \u12459 \u12454 \u12531 \u12488 \u12510 \u12493 \u12540 \u12472 \u12515 \u12540 \u12395 \u12424 \u12427 \u12469 \u12509 \u12540 \u12488 </span>\
+                                    </div>\
+                                </div>\
+                            </div>\
+                            \
+                            <div className="lg:col-span-7">\
+                                <div className="bg-white p-8 md:p-20 rounded-[2.5rem] md:rounded-[3.5rem] shadow-3xl text-[#1D1D1F]">\
+                                    <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 md:gap-x-12 gap-y-8 md:gap-y-10 serif-jp" onSubmit=\{handleSubmit\}>\
+                                        <div className="space-y-2 text-left">\
+                                            <label className="sans-inter text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">Organization / \uc0\u36020 \u31038 \u21517 </label>\
+                                            <input type="text" name="organization" value=\{formData.organization\} onChange=\{handleChange\} required className="w-full border-b border-gray-200 py-3 md:py-4 focus:border-[#002B5B] focus:outline-none transition-colors placeholder:text-gray-200 text-sm md:text-base" placeholder="\uc0\u26666 \u24335 \u20250 \u31038  \u12295 \u12295 " />\
+                                        </div>\
+                                        <div className="space-y-2 text-left">\
+                                            <label className="sans-inter text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">Full Name / \uc0\u12362 \u21517 \u21069 </label>\
+                                            <input type="text" name="name" value=\{formData.name\} onChange=\{handleChange\} required className="w-full border-b border-gray-200 py-3 md:py-4 focus:border-[#002B5B] focus:outline-none transition-colors placeholder:text-gray-200 text-sm md:text-base" placeholder="\uc0\u22995 \u21517 " />\
+                                        </div>\
+                                        <div className="space-y-2 md:col-span-2 text-left">\
+                                            <label className="sans-inter text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">Email Address / \uc0\u12513 \u12540 \u12523 \u12450 \u12489 \u12524 \u12473 </label>\
+                                            <input type="email" name="email" value=\{formData.email\} onChange=\{handleChange\} required className="w-full border-b border-gray-200 py-3 md:py-4 focus:border-[#002B5B] focus:outline-none transition-colors placeholder:text-gray-200 text-sm md:text-base" placeholder="example@organization.com" />\
+                                        </div>\
+                                        <div className="space-y-2 md:col-span-2 text-left">\
+                                            <label className="sans-inter text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">Industry Sector / \uc0\u12499 \u12472 \u12493 \u12473 \u20998 \u37326 </label>\
+                                            <select name="industry" value=\{formData.industry\} onChange=\{handleChange\} className="w-full border-b border-gray-200 py-3 md:py-4 focus:border-[#002B5B] focus:outline-none transition-colors bg-transparent appearance-none cursor-pointer text-sm md:text-base">\
+                                                <option>\uc0\u37329 \u34701 \u27231 \u38306  (\u37504 \u34892 \u12539 \u35388 \u21048 \u12539 \u20449 \u35351 )</option>\
+                                                <option>\uc0\u20107 \u26989 \u20250 \u31038  (\u20107 \u26989 \u25237 \u36039 \u12539 \u36001 \u21209 \u12539 \u20869 \u37096 \u30041 \u20445 )</option>\
+                                                <option>Web3 \uc0\u12473 \u12479 \u12540 \u12488 \u12450 \u12483 \u12503  / VC</option>\
+                                                <option>\uc0\u12381 \u12398 \u20182 </option>\
+                                            </select>\
+                                        </div>\
+                                        <div className="space-y-2 md:col-span-2 text-left">\
+                                            <label className="sans-inter text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">Inquiry Message / \uc0\u12513 \u12483 \u12475 \u12540 \u12472 </label>\
+                                            <textarea name="message" value=\{formData.message\} onChange=\{handleChange\} rows="3" className="w-full border-b border-gray-200 py-3 md:py-4 focus:border-[#002B5B] focus:outline-none transition-colors placeholder:text-gray-200 resize-none text-sm md:text-base" placeholder="\uc0\u12499 \u12472 \u12493 \u12473 \u12398 \u35201 \u20214 \u12434 \u12372 \u35352 \u20837 \u12367 \u12384 \u12373 \u12356 \u12290 "></textarea>\
+                                        </div>\
+                                        <button type="submit" className="md:col-span-2 bg-[#002B5B] text-white py-6 md:py-7 rounded-full font-bold text-lg md:text-xl hover:bg-black transition-all shadow-2xl shadow-blue-900/20 mt-6 md:mt-8 btn-luxury">\
+                                            \uc0\u23554 \u38272 \u30456 \u35527 \u12434 \u20104 \u32004 \u12377 \u12427 \
+                                        </button>\
+                                    </form>\
+                                </div>\
+                            </div>\
+                        </div>\
+                    </section>\
+\
+                    \{/* Footer */\}\
+                    <footer className="py-16 md:py-24 bg-[#FBFBFD] border-t border-gray-100 serif-jp text-left">\
+                        <div className="max-w-7xl mx-auto px-6 md:px-8">\
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 mb-16 md:mb-24">\
+                                <div className="md:col-span-5 space-y-8 md:space-y-10">\
+                                    <div className="flex items-center gap-3">\
+                                        <div className="w-8 h-8 bg-[#002B5B] rounded flex items-center justify-center">\
+                                            <span className="text-white font-bold text-sm tracking-tighter sans-inter">B</span>\
+                                        </div>\
+                                        <span className="text-lg md:text-xl font-bold text-[#1D1D1F] tracking-tight">Bifrost Japan</span>\
+                                    </div>\
+                                    <p className="max-w-sm body-serif text-gray-400 text-sm leading-relaxed font-light text-left">\
+                                        \uc0\u12499 \u12483 \u12488 \u12467 \u12452 \u12531 \u37329 \u34701 \u12398 \u12464 \u12525 \u12540 \u12496 \u12523 \u12522 \u12540 \u12480 \u12540 \u12290 \u26085 \u26412 \u22269 \u20869 \u12398 \u35215 \u21046 \u36981 \u23432 \u12362 \u12424 \u12403 \u20225 \u26989 \u36039 \u29987 \u12398 \u26368 \u36969 \u21270 \u12395 \u12362 \u12369 \u12427 \u23554 \u38272 \u12497 \u12540 \u12488 \u12490 \u12540 \u12392 \u12375 \u12390 \u12289 2026\u24180 \u12398 Web3\u22823 \u36578 \u25563 \u12434 \u25903 \u25588 \u12356 \u12383 \u12375 \u12414 \u12377 \u12290 \
+                                    </p>\
+                                    <div className="flex gap-8 text-gray-400">\
+                                        <a href="https://x.com/Bifrost_Japan" target="_blank" className="hover:text-[#002B5B] transition-colors flex items-center gap-2">\
+                                            <TwitterX size=\{18\} />\
+                                            <span className="text-[10px] sans-inter font-bold uppercase tracking-wider">Japan</span>\
+                                        </a>\
+                                        <a href="https://x.com/Bifrost_network" target="_blank" className="hover:text-[#002B5B] transition-colors flex items-center gap-2">\
+                                            <TwitterX size=\{18\} />\
+                                            <span className="text-[10px] sans-inter font-bold uppercase tracking-wider">Global</span>\
+                                        </a>\
+                                    </div>\
+                                </div>\
+                                \
+                                <div className="md:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">\
+                                    <div className="space-y-6">\
+                                        <h5 className="sans-inter text-[10px] font-bold uppercase tracking-wider text-gray-900">Global</h5>\
+                                        <ul className="space-y-4 text-xs md:text-sm text-gray-400 font-light text-left">\
+                                            <li><a href="https://bifrostnetwork.com/" target="_blank" className="hover:text-[#002B5B] transition-colors">Bifrost Network</a></li>\
+                                        </ul>\
+                                        <h5 className="sans-inter text-[10px] font-bold uppercase tracking-wider text-gray-900 pt-4">Service</h5>\
+                                        <ul className="space-y-4 text-xs md:text-sm text-gray-400 font-light text-left">\
+                                            <li><a href="https://btcfi.one/" target="_blank" className="hover:text-[#002B5B] transition-colors">BTCFi</a></li>\
+                                            <li><a href="https://boost.btcfi.one/" target="_blank" className="hover:text-[#002B5B] transition-colors">BTCFi Boost</a></li>\
+                                        </ul>\
+                                    </div>\
+                                    <div className="space-y-6 text-gray-400">\
+                                        <h5 className="sans-inter text-[10px] font-bold uppercase tracking-wider text-gray-900">Resource</h5>\
+                                        <ul className="space-y-4 text-xs md:text-sm font-light text-left">\
+                                            <li><a href="https://drive.google.com/drive/folders/1jTxnBW_RG7Qm1Q-w2kkcPedeLniuLuNF?usp=sharing" target="_blank" className="hover:text-[#002B5B] transition-colors">Media kit</a></li>\
+                                            <li><a href="#" className="hover:text-[#002B5B] transition-colors">Docs</a></li>\
+                                        </ul>\
+                                    </div>\
+                                </div>\
+                            </div>\
+                            \
+                            <div className="pt-12 border-t border-gray-100 flex flex-col items-center gap-2 text-center sans-inter footer-bottom-text">\
+                                <div className="text-[10px] md:text-[12px] text-gray-500 font-medium">\
+                                    \'a9 2026 Bifrost Network. All rights reserved.\
+                                </div>\
+                                <div className="text-[10px] text-gray-300 font-bold italic uppercase">\
+                                    A Bifrost Network Global Project\
+                                </div>\
+                            </div>\
+                        </div>\
+                    </footer>\
+                </div>\
+            );\
+        \};\
+\
+        const root = ReactDOM.createRoot(document.getElementById('root'));\
+        root.render(<App />);\
+    </script>\
+</body>\
+</html>}
